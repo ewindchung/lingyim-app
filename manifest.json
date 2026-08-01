@@ -1,0 +1,11 @@
+{
+  "name": "楞嚴咒粵語讀音",
+  "short_name": "楞嚴咒",
+  "description": "楞嚴咒粵語讀音閱讀及音頻播放",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#efe4cf",
+  "theme_color": "#efe4cf",
+  "lang": "zh-Hant"
+}
