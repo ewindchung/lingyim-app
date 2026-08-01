@@ -10,8 +10,8 @@
 *{box-sizing:border-box} body{margin:0;background:#efe4cf;color:#2f271f;font-family:"Microsoft JhengHei","PingFang TC",sans-serif;line-height:2}
 header{position:sticky;top:0;z-index:10;background:rgba(239,228,207,.97);border-bottom:1px solid #b9a98e;padding:10px}
 h1{font-size:20px;text-align:center;margin:0 0 8px}.controls,.audio-controls{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;align-items:center}
-button,select{font:inherit;font-size:14px;min-height:40px;padding:7px 10px;border:1px solid #9b8769;border-radius:8px;background:#fffaf0;color:#2f271f}
-audio{width:min(760px,100%);display:block;margin:8px auto}#status{text-align:center;font-size:12px;color:#70624f;min-height:18px;margin-top:4px}
+button,select{font:inherit;font-size:12px;min-height:34px;padding:5px 8px;border:1px solid #9b8769;border-radius:8px;background:#fffaf0;color:#2f271f}
+audio{width:min(760px,100%);display:block;margin:8px auto}#status{text-align:center;font-size:11px;color:#70624f;min-height:18px;margin-top:4px}#pageState{text-align:center;font-size:11px;color:#6d5f4c;margin-top:2px}
 #timeDisplay{font-variant-numeric:tabular-nums;min-width:118px;text-align:center;font-size:14px}main{max-width:900px;margin:auto;padding:20px 18px 130px}
 #pageTitle{text-align:center;font-size:20px;border-bottom:1px solid #b9a98e;padding-bottom:8px}#pageTime{font-size:13px;font-weight:normal;color:#756650;display:block}
 #scripture{white-space:pre-wrap;overflow-wrap:anywhere;font-size:23px;line-height:2.05}.dark{background:#171717;color:#eee}
@@ -32,7 +32,7 @@ audio{width:min(760px,100%);display:block;margin:8px auto}#status{text-align:cen
 <label>速度 <select id="speedSelect"><option value="0.5">0.5×</option><option value="1">1×</option><option value="1.5">1.5×</option><option value="2">2×</option></select></label>
 <span id="timeDisplay">00:00 / 00:00</span>
 </div>
-<div id="status">會自動記住閱讀、播放位置及速度</div>
+<div id="status">會自動記住閱讀、播放位置及速度</div><div id="pageState">播放中：第1頁　閱讀中：第1頁</div>
 </header>
 <main><h2 id="pageTitle"></h2><div id="scripture"></div></main>
 <script>
@@ -41,16 +41,27 @@ const pageEndTimes=[62,93,129,176,219,252,307,342,378,423,455,483,531,586,619,65
 const KEY={page:"lingyim-v1-page",scroll:"lingyim-v1-scroll",font:"lingyim-v1-font",dark:"lingyim-v1-dark",audio:"lingyim-v1-audio-time",speed:"lingyim-v1-speed"};
 let current=Number(localStorage.getItem(KEY.page)||0);if(!Number.isInteger(current)||current<0||current>=pages.length)current=0;
 let manualLock=0;
-const pageSelect=document.getElementById("pageSelect"),scripture=document.getElementById("scripture"),pageTitle=document.getElementById("pageTitle"),player=document.getElementById("player"),speedSelect=document.getElementById("speedSelect"),timeDisplay=document.getElementById("timeDisplay");
+const pageSelect=document.getElementById("pageSelect"),scripture=document.getElementById("scripture"),pageTitle=document.getElementById("pageTitle"),player=document.getElementById("player"),speedSelect=document.getElementById("speedSelect"),timeDisplay=document.getElementById("timeDisplay"),pageState=document.getElementById("pageState");let audioPage=0;
 pages.forEach((p,i)=>{const o=document.createElement("option");o.value=i;o.textContent=`第 ${p.number} 頁`;pageSelect.appendChild(o)});
 function fmt(s){if(!Number.isFinite(s)||s<0)s=0;s=Math.floor(s);const m=Math.floor(s/60),x=s%60;return `${String(m).padStart(2,"0")}:${String(x).padStart(2,"0")}`}
 function start(i){return i===0?0:pageEndTimes[i-1]}
 function pageFor(t){for(let i=0;i<pageEndTimes.length;i++)if(t<pageEndTimes[i])return i;return pageEndTimes.length-1}
+function updatePageState(){
+  const playing=pages[audioPage]?pages[audioPage].number:1;
+  const reading=pages[current]?pages[current].number:1;
+  pageState.textContent=`播放中：第${playing}頁　閱讀中：第${reading}頁`;
+}
 function positions(){try{return JSON.parse(localStorage.getItem(KEY.scroll)||"{}")}catch{return {}}}
 function saveRead(){const p=positions();p[current]=window.scrollY;localStorage.setItem(KEY.scroll,JSON.stringify(p));localStorage.setItem(KEY.page,String(current))}
 function saveAudio(){if(Number.isFinite(player.currentTime))localStorage.setItem(KEY.audio,String(player.currentTime));localStorage.setItem(KEY.speed,String(player.playbackRate))}
-function render(i,restore=true,source="manual"){if(i<0||i>=pages.length)return;current=i;const p=pages[i];pageTitle.innerHTML=`第 ${p.number} 頁<span id="pageTime">${fmt(start(i))} – ${fmt(pageEndTimes[i])}</span>`;scripture.textContent=p.text;pageSelect.value=String(i);prev.disabled=i===0;next.disabled=i===pages.length-1;localStorage.setItem(KEY.page,String(i));if(source==="manual")manualLock=Date.now()+2500;setTimeout(()=>window.scrollTo(0,restore?Number(positions()[i]||0):0),80)}
-function sync(force=false){if(!force&&Date.now()<manualLock)return;const i=pageFor(player.currentTime||0);if(i!==current){saveRead();render(i,false,"audio")}}
+function render(i,restore=true,source="manual"){if(i<0||i>=pages.length)return;current=i;const p=pages[i];pageTitle.innerHTML=`第 ${p.number} 頁<span id="pageTime">${fmt(start(i))} – ${fmt(pageEndTimes[i])}</span>`;scripture.textContent=p.text;pageSelect.value=String(i);prev.disabled=i===0;next.disabled=i===pages.length-1;localStorage.setItem(KEY.page,String(i));if(source==="manual")manualLock=Date.now()+2500;updatePageState();setTimeout(()=>window.scrollTo(0,restore?Number(positions()[i]||0):0),80)}
+function sync(force=false){
+  const i=pageFor(player.currentTime||0);
+  audioPage=i;
+  updatePageState();
+  if(!force&&Date.now()<manualLock)return;
+  if(i!==current){saveRead();render(i,false,"audio")}
+}
 function seek(d){if(!Number.isFinite(player.duration))return;player.currentTime=Math.max(0,Math.min(player.duration,player.currentTime+d));sync(true);saveAudio()}
 prev.onclick=()=>{saveRead();render(current-1,true,"manual")};next.onclick=()=>{saveRead();render(current+1,true,"manual")};
 pageSelect.onchange=()=>{saveRead();const i=Number(pageSelect.value);render(i,true,"manual");if(Number.isFinite(player.duration)){player.currentTime=start(i);saveAudio()}};
