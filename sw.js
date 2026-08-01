@@ -1,4 +1,4 @@
-const CACHE='lingyim-v4-20260802';
+const CACHE='lingyim-v4-1-fixed-20260802';
 const FILES=['./','./index.html','./manifest.json','./page_times.json','./icon-192.png','./icon-512.png','./lingyim.mp3'];
 self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(FILES))));
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))));self.clients.claim();});
