@@ -3,28 +3,48 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#efe4cf">
+<meta name="theme-color" content="#efe4cf"><link rel="apple-touch-icon" href="icon-192.png">
 <link rel="manifest" href="manifest.json">
 <title>楞嚴咒粵語讀音</title>
 <style>
 *{box-sizing:border-box} body{margin:0;background:#efe4cf;color:#2f271f;font-family:"Microsoft JhengHei","PingFang TC",sans-serif;line-height:2}
 header{position:sticky;top:0;z-index:10;background:rgba(239,228,207,.97);border-bottom:1px solid #b9a98e;padding:10px}
 h1{font-size:20px;text-align:center;margin:0 0 8px}.controls,.audio-controls{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;align-items:center}
-button,select{font:inherit;font-size:12px;min-height:34px;padding:5px 8px;border:1px solid #9b8769;border-radius:8px;background:#fffaf0;color:#2f271f}
+button,select{font:inherit;font-size:10px;min-height:29px;padding:3px 6px;border:1px solid #9b8769;border-radius:8px;background:#fffaf0;color:#2f271f}
 audio{width:min(760px,100%);display:block;margin:8px auto}#status{text-align:center;font-size:11px;color:#70624f;min-height:18px;margin-top:4px}#pageState{text-align:center;font-size:11px;color:#6d5f4c;margin-top:2px}
 #timeDisplay{font-variant-numeric:tabular-nums;min-width:118px;text-align:center;font-size:14px}main{max-width:900px;margin:auto;padding:20px 18px 130px}
 #pageTitle{text-align:center;font-size:20px;border-bottom:1px solid #b9a98e;padding-bottom:8px}#pageTime{font-size:13px;font-weight:normal;color:#756650;display:block}
 #scripture{white-space:pre-wrap;overflow-wrap:anywhere;font-size:23px;line-height:2.05}.dark{background:#171717;color:#eee}
 .dark header{background:rgba(23,23,23,.97);border-bottom-color:#444}.dark button,.dark select{background:#292929;color:#eee;border-color:#666}
 .dark #status,.dark #pageTime{color:#bbb}
+
+#versionTag{position:fixed;right:6px;bottom:5px;font-size:9px;opacity:.55;z-index:30}
+#splash{position:fixed;inset:0;z-index:9999;background:#efe4cf;display:flex;align-items:center;justify-content:center;flex-direction:column;transition:opacity .35s}
+#splash.hide{opacity:0;pointer-events:none}
+#splashTitle{font-size:28px;font-weight:700}
+#splashSub{font-size:14px;margin-top:6px}
+#settingsPanel{display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.45);padding:16px;overflow:auto}
+#settingsCard{max-width:520px;margin:20px auto;background:#fffaf0;color:#2f271f;border-radius:12px;padding:16px}
+#settingsRows{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:12px 0}
+.timeRow{display:flex;align-items:center;gap:6px}
+.timeRow label{font-size:11px;min-width:42px}
+.timeRow input{width:82px;font-size:12px;padding:5px}
+.settingsActions{display:flex;gap:8px;justify-content:flex-end}
+#updateBanner{display:none;position:fixed;left:10px;right:10px;bottom:12px;z-index:300;background:#30271f;color:white;padding:10px;border-radius:10px;text-align:center;font-size:12px}
+#updateBanner button{margin-left:8px}
+.dark #settingsCard{background:#292929;color:#eee}
+.dark #splash{background:#171717;color:#eee}
+
 </style>
 </head>
 <body>
+<div id="splash"><div id="splashTitle">楞嚴咒</div><div id="splashSub">粵語讀音</div></div>
+
 <header>
 <h1>楞嚴咒粵語讀音</h1>
 <div class="controls">
 <button id="prev">上一頁</button><select id="pageSelect"></select><button id="next">下一頁</button>
-<button id="smaller">字細</button><button id="larger">字大</button><button id="dark">夜間</button><button id="top">頁頂</button>
+<button id="smaller">字細</button><button id="larger">字大</button><button id="dark">夜間</button><button id="top">頁頂</button><button id="settingsBtn">時間</button>
 </div>
 <audio id="player" controls loop preload="metadata"><source src="lingyim.mp3" type="audio/mpeg"></audio>
 <div class="audio-controls">
@@ -37,7 +57,7 @@ audio{width:min(760px,100%);display:block;margin:8px auto}#status{text-align:cen
 <main><h2 id="pageTitle"></h2><div id="scripture"></div></main>
 <script>
 const pages=[{"number": 1, "text": "雪達他加多-算Lee森 雪DaDar-趴特林\n\n亞Pa拉TeDum Pa拉丁嘰Dum Da喇Lee\n\n喇媽霞 沙喇華-BuDa 波D沙喇Be-B亞霞\n\n喇摩 濕Dar冧 三藐三BuDa CallD冧 \n\n沙司拉娃Ka 森加冧 喇摩 碌寄 \n\n亞LoHunDar冧 喇摩 SuLuDar-PunDar冧 \n\n喇摩 沙CoolLee-Dar加Me冧 喇摩 \n\n亞拉加Me冧 喇摩 碌寄 三藐加Da冧 \n\n三藐PaLarTeePunDar冧"}, {"number": 2, "text": "喇摩 NutTar拿TryYaYa 喇摩 白加或地\n\nDraReDarSo拉SenNa \n\n怕喇下單LarDarJ牙 達Tar加Da油華地\n\n三藐三BuDai牙 喇摩 白加或地 \n\n亞MeDarBuy牙達Tar加達-油華地 \n\n三藐三BuDai牙 喇摩 白加或地 握卡粗BuI牙"}, {"number": 3, "text": "達Tar加達-油華地 三藐三BuDai牙 \n\n喇摩 白加或地 Bye沙揸GuLu 為GuRe牙\n\n怕巴啦債牙 達Tar加達-油華地 \n\n三藐三BuDai牙 喇摩 白加或地 \n\n森Put沙PeDar SarLenDra啦債牙\n\n達Tar加達牙 三藐三BuDai牙 喇摩 白加或地\n\n沙薑MuiNa而 達Tar加達-油華地"}, {"number": 4, "text": "三藐三BuDai牙 喇摩 白加或地 \n\n啦TatLan沽森媽 KDo啦齋牙 \n\n達Tar加達-油華地 三藐三BuDai牙\n\n喇摩 白加或地 達Tar加達-沽拉牙\n\n喇摩 白加或地 趴得嘛-Cool拉牙 \n\n喇摩 白加或地 娃之啦Cool拉牙 \n\n喇摩 白加或地 媽Lee-Cool拉牙\n\n喇摩 白加或地 Nou揸-Cool拉牙\n\n喇摩 Day娃DoShe冧 喇摩 SidDa\n\nVDo吖-達啦冧 喇摩 SidDa"}, {"number": 5, "text": "V啲吖-Dar啦LuShe冧 Sha怕Lu沽La霞\n\n森媽Lu他冧 喇摩 BraaWho媽離 \n\n喇摩 煙得拉牙 喇摩 白加或地 Ru得拉牙\n\n污媽BarDee SarHeyYaYa 喇摩 \n\nNa拉Ya拉牙 Luck茶冥 沙欺YaYa Pun咋\n\n嘛下Mu得喇 那媽Suke他Ya 喇摩 \n\n罵下加拉牙 TreePuLar加啦牙\n\nVed他啦Pu啦加拉牙 吖DMuTwo括他\n\nSim媽沙拿"}, {"number": 6, "text": "話絲Ni 媽Tree加拿 喇媽司-咕LeeDie牙 \n\nAeBe傲 喇媽雪嘰度華-伊曼 白加或地\n\n雪DarDar加拖-算Lee森  雪DarDar趴特林\n\n喇嘛趴啦之Dum Pa啦丟嘰Dum\n\n沙喇華Day華 喇媽雪嘰Dum\n\n沙喇話DayVeB牙霞 Pu嘰Dum\n\n沙喇話DayVeB蝕揸 趴喱怕LeeTum\n\n沙喇華-BuDa-㗎喇吓"}, {"number": 7, "text": "Nee㗎喇-吓KarRim 趴喇VidDe牙\n\n知DarNaKarRim DoRunDar冧 沙吐嘩冧\n\nDar媽琴 Do洩他冧 Nee娃喇Nim \n\n亞加拉-唔Lee丟 怕啦沙媽咖Rim \n\n沙喇華-品Dar拿  Mok叉拉咖Rim\n\n沙喇華Do洩Tar\n\nDo洩娃-Poon啦-Nim娃-喇Nim\n\n揸Two啦-SitTe冧 咖喇吓 沙夏司啦冧\n\nWeedTar喇-沙啦KarRim \n\n吖是Tar-Vim沙田冧 Luck叉他啦冧 \n\n怕啦沙Dar咖Rim 吖洩Tar冧 \n\n罵下咕啦咖冧 WeedDar話-沙啦咖Rim\n\n沙喇華-沙True Lee娃喇Nim 古Rum \n\nDo洩娃Poon啦冧炸 拉沙Nim"}, {"number": 8, "text": "Vi沙沙Tar拿 吖咖Ni-污DarKa 污得啦Nim\n\n亞怕喇之DarCool拿 罵下GenDar林\n\n罵下DiskTum 罵下Day沉 \n\n罵下書娃Dum-炸娃拿 罵下巴拿 a\n\n雪De吖-噴Dar啦-娃算尼 吖Lee吖他拿\n\n巴喱CoolTim-之娃占 娃之娃媽喱汰\n\nVisLu氹 趴得媽-Kar蚊 娃之拉-之Who或揸\n\n媽啦J華 趴拉之氹"}, {"number": 9, "text": "娃之啦單電 Veed沙啦Jar 山DarBuyDay霞\n\nPu之Dar 森MeDo趴 罵下-樹WayDum\n\n摩哈司外達 哈Lee哈Dar拿 罵下巴拿 亞趴拿\n\n娃之啦-山加啦-J華 娃之啦-沽媽喱霞\n\nGrandDarRi 娃之啦-HusDar炸 罵下MeDia\n\n他Tar-Come揸拿-媽喱Ka Cool森爸\n\n拉他NaJ華 Y撈揸拿 \n\nCoolDarLuTwo-算Lee沙\n\nV占巴拉媽炸 娃之啦-卡拉Kar"}, {"number": 10, "text": "怕拉都-揸拉Kar 娃之啦-DumD炸 \n\n是WayDar炸 加媽Luck茶 沙司-怕啦爸\n\n“E”D”A”Dee 沫Dar拉-加拿霞 \n\n沙拿Vee-Luck沉 KooLu曼途 嘛媽是牙 \n\n<佛弟子 敬受奉持>\n\nOng Lee司加拿 PraLar沙示Dar \n\nDaDa加拖算Lee沙 Ong Bloom 揸笨拿 \n\nOng Bloom Stun巴拿 Ong Bloom 磨哈拿 \n\nOng Bloom 罵他拿 Ong Bloom \n\n趴啦ViDee牙 森巴揭叉啦加拿 Ong Bloom"}, {"number": 11, "text": "沙拿華-DusDar冧 Stun巴啦加拿 \n\nOng Bloom 沙拿華-吔茶 Luck叉Sar\n\nGara下冧 VedDar拿-沙娃加拿 Ong Bloom\n\n揸TuRaCiTi冧 Gara哈 Sa喇Sue啦森\n\nVeeNa沙啦GaRa Ong Bloom \n\n吖是DarMe沙TeeDum Luck叉True啦冧\n\nPraSarDanNa咖拿 Ong Bloom 吖是Dar冧 \n\n罵下-加RaNa冧 Ved下喇-沙拉加拿"}, {"number": 12, "text": "加啦 Ruck叉-Ruck叉-Mam 巴㗎文 \n\n雪他他加多算Nee沙 罵下怕-LanDoVee離\n\n罵下-沙司拉-Bu離 沙She啦-司爐晒\n\nCall“D”沙Dar 沙下“C”啦-喱Der離\n\n亞BenDee牙 之娃LitDar Na他NaKar\n\n罵下-娃之Dar拿 TreeBuVan拿 蠻Dar拿 \n\nOng 沙娃司Lu-巴華道"}, {"number": 13, "text": "罵媽 \n\n<佛弟子 敬受奉持>\n\n喇揸Buy牙 Jar啦Buy牙 吖勤Ni-Buy牙 \n\n污特Kar-Buy牙 Vi沙Buy牙 沙司DarBuy牙\n\n怕喇-揸卡拉-Buy牙 Do“B”Cool叉-Buy牙\n\n吖沙NiBuy牙 牙加拉-唔Me丟-Buy牙\n\nDar喇NeeBooMe-ComePa-Buy牙\n\n污轆卡-拍他-Buy牙 Ra揸登Da-Buy牙 \n\n啦加Buy牙 Ved丟Buy牙 雪趴LuLee-Buy牙\n\n一顧茶-Gar喇吓 Luck叉沙-固喇吓 \n\nPreyDar-固喇吓 Pre沙揸-固喇吓\n\nBuuDa-固喇吓"}, {"number": 14, "text": "Cum班Dar-固喇吓 BuuDarNa-固喇吓\n\n卡Tar-BuuDar拉-固喇吓 洩跟Dar-固喇吓\n\n牙怕司-媽拉-固喇吓 唵媽Da-固喇吓\n\n炸Yar-固喇吓 喱娃Tee-固喇吓 \n\n污揸哈Lin啦霞 加巴下-Lin啦霞 \n\n炸Dar下-Lin啦霞 之WeedDar-下Lin啦霞\n\nLuLee他-哈LinLa牙 Veed沙下RimYa\n\n問沙下RimYa 未Dar下RimYa \n\n麻揸下RimYa VanDar下RimYa \n\n吖舒揸下RimYa 之揸下RimYa \n\n地森沙-喇Ve森 沙拿話-Gar下冧\n\nVeDium 煎DieYa未 揭拉Ya未 \n\n趴ReKa啦揸Ka-KuReDum VeDium"}, {"number": 15, "text": "煎DieYa未 揭拉Ya未 \n\n達卡達-括啦-KuReDum ViDium \n\n煎DieYa未 揭拉Ya未 \n\n罵下趴Sue趴TiRuDra-KuReDum \n\nViDium 煎DieYa未 揭拉Ya未 \n\n達Dar娃-嫁LuDar-沙He牙-KuReDum\n\nViDium 煎DieYa未 揭拉Ya未 \n\n罵下-嫁啦-媽Tree-嫁拿-KuReDum\n\nViDium 煎DieYa未 揭拉Ya未 \n\n加巴喱加-KuReDum"}, {"number": 16, "text": "ViDium 煎DieYa未 揭拉Ya未 債YaKa拿\n\n媽Do加拿 沙啦娃LuTar \n\n沙Dar拿-KuReDum ViDium \n\n煎DieYa未 揭拉Ya未 \n\n揸DoLu-巴健Ni-KuReDum ViDium \n\n煎DieYa未 揭拉Ya未 Bring-KeLee-Tick-Ka\n\n躝TeeKee司娃拿 加啦趴De \n\n剎稀牙-KuReDum ViDium \n\n煎DieYa未 揭拉Ya未 \n\nNaGaNa-司RaMaNa-KuReDum ViDium"}, {"number": 17, "text": "煎DieYa未 揭拉Ya未 \n\n阿Lu-HunDa-KuReDum ViDium \n\n煎DieYa未 揭拉Ya未 \n\nVeedDa喇KaNa-KuReDum ViDium \n\n煎DieYa未 揭拉Ya未 \n\n娃之啦-怕Ni-KuReDum ViDium \n\n煎DieYa未 揭拉Ya未 \n\nBuLa-KuDa-KuReDum \n\nLuDra拿-KuReDum \n\nNaRaYaNa-KuReDum ViDium \n\n煎DieYa未 揭拉Ya未 \n\n娃之拉-PanNi-KuHe吖-沽Dee巴De-KuReDum\n\nViDium 煎DieYa未 揭拉Ya未 Luck茶\n\nLuck茶-Mum\n\n<佛弟子 敬受奉持>\n\n巴Ga文 雪DaDa-趴特林 NaMorStoolDay\n\n牙洩-DarLar-卡LuKa 趴巴啦-SpooTa"}, {"number": 18, "text": "VeedKaDa趴洩Da-ParTray霞\n\n截娃拿-截娃拿 得Ka-得Ka \n\nVeedDarKa-VeedDarKa Da拿-Da拿\n\nVeedDarKa-VeedDarKa JinDa-JinDa\n\nBimDa-BimDa Ong Ong Part Part \n\nSar-娃哈 HayHayPart 牙霧加哈Part\n\n吖趴拉Tee-合TaYaPart \n\n娃LaPart-DarYaPart \n\n吖Su喇VeedDar拿\n\n沙拿話-DayVe-B牙下-Part \n\n沙拿話-Na基-B牙下-Part \n\n沙拿話-YukSay-B牙下-Part\n\n沙拿話-Yak叉Say-B牙下-Part"}, {"number": 19, "text": "沙拿話-加RuDay-B牙下-Part\n\n沙拿話-GanDaRuWay-B牙下-Part\n\n沙拿話-哈SueLay-B牙下-Part\n\n沙拿話-KimNa喱-B牙下-Part\n\n沙拿話-磨Hu-Lar基-B牙下-Part\n\n沙拿話-PisSar“J-B牙下-Paet\n\n沙拿話-Cum班Day-B牙下-Part\n\n沙拿話-BuDar喱-B牙下-apart\n\n沙拿話-卡Ta-Bu單喱-B牙下-Part"}, {"number": 20, "text": "沙拿話-Do冧GaeDay-B牙下-Part\n\n沙拿話-DousPray括司Day-B牙下-Part\n\n沙拿話-之娃喱-B牙下-Part\n\n沙拿話-牙怕司媽喱-B牙下-Part\n\n沙拿話-SheRa媽喱-B牙下-Part\n\n沙拿話-TeLuTe基-B牙下-Part\n\n沙拿話-Om萬Day-B牙下-Part\n\n沙拿話-VeedDeYa-JarReeYae-B牙下-Part\n\n債Ya加拿 媽Do加拿 \n\n沙拿話-Lu他-沙Dar尼標"}, {"number": 21, "text": "VeedDeYa-揸Dee喱-B牙下-Part\n\n揸TuLu-ParkKinNee-B牙下-Part\n\n娃之啦-鳩媽喱 Cool躝DarRi\n\nVeedDee喇DaJay-B牙下-Part\n\n罵下-怕Noon嘰喱-B牙下-Part\n\n娃之拉-生加啦Ya \n\n怕Ran丟嘰喇DarDar債YaPart 罵下-加拉牙\n\n媽Tree加拿 喇媽司嘰-DieYaPart\n\n煙DryYaPart Bra呵MinNiYaPart \n\nRu齋YaPart VisNaVeeYeahPart \n\nVisNeVeeYeahPart \n\nBraWhoLaMeYeahPart\n\n話啦嘰YeahPart 吖根NiYeahPart\n\n罵下加NiYeahPart RaDarReYeahPart"}, {"number": 22, "text": "Ka啦DanDeeYeahPart AnDreeYeahPart\n\n媽TreeYeahPart 揸蚊DeeYeahPart\n\nKa喇拉-TreeYeah-Part \n\nKa趴-LeeYeah-Part\n\n吖Dee-MuCallTalkKa-SimMai沙拿-VasSinNeeYeah-Part\n\n“A”Kay切他-沙塗華-媽麻 \n\n<咒語者自稱名>\n\nDoStar之Dar\n\n怕趴-之Dar 撈Da啦-之Dar \n\nVedDarWay-沙之Dar 亞MaiDar喱-之Dar"}, {"number": 23, "text": "污Da趴-Die-AnDi Ke拉AnDi \n\nMan他拉-AnDi 揸PanDi YoHanDi \n\n污揸下啦 加啦哈下啦 RuDi吖下啦 \n\nMan沙下啦 MeiDa下啦 罵揸下啦 娃沙下啦\n\n炸Dar下啦 Gi-VeeDar-下啦 罵啦下啦\n\n話De吖下啦 跟Da下啦 撥是巴-下啦\n\n趴啦下啦 沙Shar下啦 怕趴之Dar \n\nDo司Dar-之Dar 爹話-咖喇哈 Na嫁-咖喇哈\n\nYak叉-咖喇哈 Rak叉-咖喇哈 \n\n吖Zoo啦-咖喇哈 加LuDar-咖喇哈\n\nKimNaRa-咖喇哈 摩Hu啦加-咖喇哈\n\nPrayDar-咖喇哈"}, {"number": 24, "text": "Pizza揸-咖喇哈 BuDar-咖喇哈 \n\nBuDarNa-咖喇哈 加他Pull他Na-咖喇哈\n\nCum班Dar-咖喇哈 洩Kan-Dar-咖喇哈\n\nOm媽RanDar-咖喇哈 債Ya-咖喇哈\n\n牙趴司媽-咖喇哈 Dar卡DarKinNi-咖喇哈\n\n喱娃Ti-咖喇哈 炸Mi加-咖喇哈 \n\n沙CoolNee-咖喇哈 躝D加-咖喇哈\n\n喃Vee加-咖喇哈 卡他趴Ni-咖喇哈"}, {"number": 25, "text": "Gi娃拿 Ae加HeKar 度壞De-娃Kar \n\nDryDe娃Kar 揸TwoLu-他Kar NiDa吖-字娃拿\n\nVee沙媽就-字娃拿 或TeeKar 派TeeKar \n\nSlay森MeKar 散De趴DiKar 沙娃拉-字娃拿\n\n是囉LuDe 牙LuDar-娃別-DarKar \n\n吖Lu揸Kar 呃C撈近 沒卡撈近 \n\n下利-Dra-撈近 KaNoon啦Sue林 \n\nDanDarSue林 下喱Dar啦-Sue林 \n\n罵Lu媽-Sue林 怕啦司娃-Sue林 \n\nPlease他-Sue林 污Dar啦-Sue林 \n\nKaTi-Sue林 娃司Ti-Sue林 污Lu-Sue林\n\n陰加-Sue林 HusDar-Sue林 怕Dar-Sue林\n\n沙拉VanKa-怕啦丟Ka-Sue林"}, {"number": 26, "text": "BuDarVeedDaDar 達加達-KinNi \n\n字娃啦-噠官Nuun KindDu Key下爸\n\nLuDarWine 沙拉趴Do-亞拎嫁 小沙渡拿\n\n沙咖拿-Veed嘥YoKar 吖近Nee 污達Ka\n\n罵拉Way拿 近Dar拿 亞加拉-誤Lee丟\n\nDryMooKar Dry特他Kar 話喱司之Kar\n\n沙Lu趴 喇Cool拿 SimKar Mee吖Cool拿\n\nNick茶 Dar啦Nick茶 揸媽拿 GVeeBi \n\n地森沙拿Vee森"}, {"number": 27, "text": "蝕DarDarPartDa拿 罵下-娃之撈-算Nee森\n\n罵下趴啦丁嘰Dum 吔娃達爸 達沙Yo揸拿\n\n邊Dar吖-Rem拿 She罵笨單-咖路Me \n\nThis沙笨單-咖路Me 趴拉VeedDe牙笨單-咖路Me\n\nDay做笨單-咖路Me 哈是Dar笨單-咖路Me\n\n趴Da笨單-咖路Me \n\n沙拉Van嫁-怕拉丟嫁-笨單-咖路Me"}, {"number": 28, "text": "達D吖Tar Ong And吖Le And吖Le \n\nViSaDay ViSaDay 賓Da 賓Da 賓DarNi\n\n賓DarNi 威娃-娃之啦-噴Ni Part Ong \n\nBloom Part 洒娃哈\n\n拿摸-Sue嘰-咖DarYa Su加Dar-油華地\n\n三藐三BuDai牙 蝕掟Do ManDar拉PartDa\n\n洒娃哈"}];
-const pageEndTimes=[62,93,129,176,219,252,307,342,378,423,455,483,531,586,619,653,704,748,779,810,858,891,940,970,1023,1060,1092,1121];
+const defaultPageEndTimes=[62,93,129,176,219,252,307,342,378,423,455,483,531,586,619,653,704,748,779,810,858,891,940,970,1023,1060,1092,1121];let pageEndTimes=JSON.parse(localStorage.getItem("lingyim-v4-page-times")||"null")||[...defaultPageEndTimes];
 const KEY={page:"lingyim-v1-page",scroll:"lingyim-v1-scroll",font:"lingyim-v1-font",dark:"lingyim-v1-dark",audio:"lingyim-v1-audio-time",speed:"lingyim-v1-speed"};
 let current=Number(localStorage.getItem(KEY.page)||0);if(!Number.isInteger(current)||current<0||current>=pages.length)current=0;
 let manualLock=0;
@@ -77,7 +97,91 @@ window.addEventListener("scroll",()=>{clearTimeout(window._st);window._st=setTim
 window.addEventListener("beforeunload",()=>{saveRead();saveAudio()});document.addEventListener("visibilitychange",()=>{if(document.hidden){saveRead();saveAudio()}});
 scripture.style.fontSize=Number(localStorage.getItem(KEY.font)||23)+"px";if(localStorage.getItem(KEY.dark)==="1")document.body.classList.add("dark");
 const savedSpeed=Number(localStorage.getItem(KEY.speed)||1);const speed=[.5,1,1.5,2].includes(savedSpeed)?savedSpeed:1;player.playbackRate=speed;speedSelect.value=String(speed);
+
+const settingsPanel=document.getElementById("settingsPanel");
+const settingsRows=document.getElementById("settingsRows");
+
+function secondsToMMSS(sec){
+  sec=Math.max(0,Math.floor(Number(sec)||0));
+  return `${String(Math.floor(sec/60)).padStart(2,"0")}:${String(sec%60).padStart(2,"0")}`;
+}
+function mmssToSeconds(value){
+  const match=String(value).trim().match(/^(\d+):([0-5]\d)$/);
+  if(!match)return null;
+  return Number(match[1])*60+Number(match[2]);
+}
+function buildTimeSettings(){
+  settingsRows.innerHTML="";
+  pageEndTimes.forEach((sec,i)=>{
+    const row=document.createElement("div");
+    row.className="timeRow";
+    row.innerHTML=`<label>第${i+1}頁</label><input data-index="${i}" value="${secondsToMMSS(sec)}" inputmode="numeric">`;
+    settingsRows.appendChild(row);
+  });
+}
+document.getElementById("settingsBtn").onclick=()=>{buildTimeSettings();settingsPanel.style.display="block"};
+document.getElementById("closeSettings").onclick=()=>settingsPanel.style.display="none";
+document.getElementById("resetTimes").onclick=()=>{pageEndTimes=[...defaultPageEndTimes];buildTimeSettings()};
+document.getElementById("saveTimes").onclick=()=>{
+  const inputs=[...settingsRows.querySelectorAll("input")];
+  const newTimes=[];
+  for(const input of inputs){
+    const sec=mmssToSeconds(input.value);
+    if(sec===null){alert(`第${Number(input.dataset.index)+1}頁時間格式錯誤`);return}
+    newTimes.push(sec);
+  }
+  for(let i=1;i<newTimes.length;i++){
+    if(newTimes[i]<=newTimes[i-1]){alert(`第${i+1}頁時間必須遲過上一頁`);return}
+  }
+  pageEndTimes=newTimes;
+  localStorage.setItem("lingyim-v4-page-times",JSON.stringify(pageEndTimes));
+  settingsPanel.style.display="none";
+  render(current,true,"startup");
+};
+
+window.addEventListener("load",()=>{
+  setTimeout(()=>document.getElementById("splash").classList.add("hide"),650);
+  setTimeout(()=>document.getElementById("splash").remove(),1100);
+});
+
+let refreshing=false;
+if("serviceWorker" in navigator){
+  navigator.serviceWorker.addEventListener("controllerchange",()=>{
+    if(refreshing)return;
+    refreshing=true;
+    location.reload();
+  });
+  navigator.serviceWorker.ready.then(reg=>{
+    reg.update();
+    reg.addEventListener("updatefound",()=>{
+      const worker=reg.installing;
+      worker.addEventListener("statechange",()=>{
+        if(worker.state==="installed"&&navigator.serviceWorker.controller){
+          document.getElementById("updateBanner").style.display="block";
+          document.getElementById("updateNow").onclick=()=>worker.postMessage({type:"SKIP_WAITING"});
+        }
+      });
+    });
+  });
+}
+
 render(current,true,"startup");if("serviceWorker"in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
 </script>
+
+<div id="settingsPanel">
+  <div id="settingsCard">
+    <h3>每頁結束時間</h3>
+    <div style="font-size:11px">格式：分鐘:秒，例如 08:51</div>
+    <div id="settingsRows"></div>
+    <div class="settingsActions">
+      <button id="resetTimes">還原預設</button>
+      <button id="closeSettings">取消</button>
+      <button id="saveTimes">儲存</button>
+    </div>
+  </div>
+</div>
+<div id="updateBanner">有新版本可用 <button id="updateNow">立即更新</button></div>
+<div id="versionTag">v4.0</div>
+
 </body>
 </html>
