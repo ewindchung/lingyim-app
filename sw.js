@@ -1,4 +1,4 @@
-const CACHE='lingyim-v5-20260802';
+const CACHE='lingyim-v5-1-20260802';
 const FILES=[
   './',
   './index.html',
@@ -11,9 +11,7 @@ const FILES=[
 ];
 
 self.addEventListener('install',event=>{
-  event.waitUntil(
-    caches.open(CACHE).then(cache=>cache.addAll(FILES))
-  );
+  event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(FILES)));
   self.skipWaiting();
 });
 
@@ -26,13 +24,8 @@ self.addEventListener('activate',event=>{
   self.clients.claim();
 });
 
-self.addEventListener('message',event=>{
-  if(event.data&&event.data.type==='SKIP_WAITING')self.skipWaiting();
-});
-
 self.addEventListener('fetch',event=>{
   if(event.request.method!=='GET')return;
-
   event.respondWith(
     fetch(event.request)
       .then(response=>{
