@@ -1,14 +1,18 @@
-楞嚴咒 App v5.1
+楞嚴咒 App v5.2 UPDATE PACKAGE
 
-此版本使用最新 DOCX 文字內容，重新整理 JavaScript，修正只顯示第一頁的問題。
+上載 GitHub 時，只需要覆蓋：
+- index.html
+- sw.js
+- page_times.json
+- version.json
 
-上載 GitHub 時請上載：
-index.html
-manifest.json
-sw.js
-page_times.json
-version.json
-icon-192.png
-icon-512.png
+不用更新：lingyim.mp3、manifest.json、icon-192.png、icon-512.png
 
-lingyim.mp3 沒有改動，可以保留 GitHub 原有版本。
+v5.2 changes:
+- 最新 DOCX 全文與換行
+- 保留 DOCX 黑色 / 藍色字色
+- 最新 28 頁時間
+- 上一頁 / 下一頁按鈕後回到頁頂
+- 手機向左掃 = 下一頁，向右掃 = 上一頁
+- Swipe 後回到頁頂
+- 其他 v5.1 功能保留
