@@ -1,4 +1,4 @@
-const CACHE='lingyim-v5-2-20260830';
+const CACHE='lingyim-v5-2-1-20260830';
 const FILES=[
   './',
   './index.html',
