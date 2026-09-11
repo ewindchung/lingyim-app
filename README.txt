@@ -1,7 +1,3 @@
-LingYim App v5.3.1
-Upload/overwrite: index.html, sw.js, page_times.json, version.json
-
-Counter sequence changed to:
-Reset 0 | Count number | Down − | Up +
-
-No other changes. Content, timings, all-black scripture, audio, swipe and other features preserved.
+LingYim App v5.3.2
+Only scripture wording updated from 20260911 DOCX. No other changes.
+Upload: index.html, sw.js, page_times.json, version.json
